@@ -31,6 +31,6 @@ io.on("connection", (client) => {
   });
 });
 
-server.listen(port, "0.0.0.0", () => {
-  console.log(`listening on *:${port}`);
+server.listen(port, () => {
+  console.log(`listening on :${port}`);
 });
