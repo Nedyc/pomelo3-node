@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const app = express();
 var cors = require("cors");
@@ -21,13 +23,23 @@ app.use(
 io.on("connection", (client) => {
   console.log("A user has connected");
 
+  client.on("broadcastData", (data) => {
+    if (data.secret !== process.env.SOCKET_SECRET) return;
+
+    client.broadcast.emit("message", {
+      type: data.type,
+      user: { id: client.id },
+      values: data.values,
+    });
+  });
+
   client.on("disconnect", () => {
     console.log("A user has disconnected");
 
-    const surveyId = client.surveyId;
-    client.broadcast
-      .to(surveyId)
-      .emit("message", { type: "userDisconnected", user: { id: client.id } });
+    client.broadcast.emit("message", {
+      type: "userDisconnected",
+      user: { id: client.id },
+    });
   });
 });
 
